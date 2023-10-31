@@ -1,20 +1,43 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Login from './src/pages/Login/Login';
+import Register from './src/pages/Register/Register';
 
-export default function App() {
+type RootStackParamList = {
+  Login: undefined;
+  Register: undefined;
+};
+// realizamos una declaracion global de type RootStackParamList para 
+// que el hook useNavigation pueda hacer uso de la navegacion
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
+}
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName='Login'>
+        <Stack.Screen 
+        name="Login"
+        component={Login} 
+        options={{
+          headerShown: false
+        }}
+        />
+        <Stack.Screen 
+        name="Register" 
+        component={Register} 
+        options={{
+          headerShown: false
+        }}/>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
