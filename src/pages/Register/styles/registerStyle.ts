@@ -22,6 +22,7 @@ export const registerStyles = StyleSheet.create({
       paddingHorizontal: 10,
       borderRadius: 10,
       marginTop: 4,
+      height: 40,
     },
     button: {
       width: '100%',

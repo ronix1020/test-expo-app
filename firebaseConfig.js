@@ -6,7 +6,7 @@ import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 // necesitamos utilizar initializeAuth para poder tener un mejor control 
 // de la persistencia de la sesion de firebase, los metodos son iguales a los de 
 // getAuth
-import { initializeAuth } from "firebase/auth";
+import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 // import {...} from "firebase/database";
 // import {...} from "firebase/firestore";
 // import {...} from "firebase/functions";
