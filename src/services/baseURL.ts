@@ -1,0 +1,1 @@
+export const baseURL = 'https://6549bd18e182221f8d51d12d.mockapi.io/expoapp';

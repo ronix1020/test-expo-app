@@ -12,6 +12,7 @@ import {
 } from "@expo-google-fonts/lato";
 import AppNavigator from "./src/navigation/AppNavigator";
 import { User } from "firebase/auth";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 // realizamos una declaracion global de type RootStackParamList para
 // que el hook useNavigation pueda hacer uso de la navegacion
@@ -27,6 +28,7 @@ SplashScreen.preventAutoHideAsync();
 function App() {
   // declaramos un estado para guardar el usuario
   const [user, setUser] = useState<User>();
+  const [isAppReady, setIsAppReady] = useState(false);
   // necesitamos cargar las fuentes antes de renderizar el contenido de la app
   const [fontsLoaded, fontError] = useFonts({
     Lato_400Regular,
@@ -34,8 +36,6 @@ function App() {
     Lato_700Bold,
   });
 
-  // mediante un useEffect comprobamos si el usuario esta logueado y
-  // tambien si las fuentes estan cargadas
   useEffect(() => {
     // comprobamos si el usuario esta logueado
     firebaseAuth.onAuthStateChanged((user) => {
@@ -48,13 +48,24 @@ function App() {
         setUser(undefined);
         console.log("user is not logged");
       }
+
+      // una vez comprobado si el usuario esta logueado o no, procedemos a 
+      // dar por finalizada la carga de la app
+      setIsAppReady(true);
     });
+  }, [])
+
+
+  // mediante un useEffect comprobamos si el usuario esta logueado y
+  // tambien si las fuentes estan cargadas
+  useEffect(() => {
     // comprobamos si las fuentes estan cargadas
     onLoadFonts();
-  }, [fontsLoaded, fontError]);
+  }, [fontsLoaded, fontError, isAppReady]);
 
   const onLoadFonts = async () => {
-    if (fontsLoaded || fontError) {
+    // si las fuentes no estan cargadas, no hacemos nada
+    if (fontsLoaded && isAppReady && fontError === null) {
       // si las fuentes estan cargadas, ocultamos el splash screen
       await SplashScreen.hideAsync();
     }
@@ -67,8 +78,10 @@ function App() {
 
   return (
     <NavigationContainer>
-      {/* comprobamos si existe usuario logueado o no  */}
-      {user ? <AppNavigator /> : <AuthNavigator />}
+      <SafeAreaProvider style={{ flex: 1 }}>
+        {/* comprobamos si existe usuario logueado o no  */}
+        { user ? <AppNavigator /> : <AuthNavigator /> }
+      </SafeAreaProvider>
     </NavigationContainer>
   );
 }
