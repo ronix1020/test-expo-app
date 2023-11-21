@@ -16,7 +16,13 @@ export const getAllWritings = async () => {
     })
 }
 
-export const postWriting = async (title: string, bodyText: string, backgroundColor: string, avatar: string, username: string) => {
+export const postWriting = async (
+    title: string, 
+    bodyText: string, 
+    backgroundColor: string, 
+    avatar: string, 
+    username: string
+) => {
     return new Promise( async (resolve, reject) => {
         await fetch(`${baseURL}/writings`, {
             method: 'POST',

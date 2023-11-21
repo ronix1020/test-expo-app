@@ -8,39 +8,58 @@ import {
   StyleSheet,
   TextStyle,
   ImageStyle,
+  ColorValue,
 } from "react-native";
 import { ColorsApp } from "../themes/colors";
+import { useNavigation } from "@react-navigation/native";
+import { ArrowBack } from "../../assets/svg/SvgIcons";
 
 interface HeaderBarProps {
   title?: string;
   avatar?: string;
+  backIcon?: boolean;
   renderLeftComponent?: React.ReactNode;
   renderRightComponent?: React.ReactNode;
   headerBarStyle?: ViewStyle;
   titleStyle?: TextStyle;
   avatarContainerStyle?: ViewStyle;
   avatarStyle?: ImageStyle;
+  backgroundColor?: ColorValue;
   onPressAvatar?: () => void;
 }
 
 export const HeaderBar = ({
   title,
   avatar,
+  backIcon,
   headerBarStyle,
   renderLeftComponent,
   renderRightComponent,
   titleStyle,
   avatarStyle,
   avatarContainerStyle,
+  backgroundColor,
   onPressAvatar = () => {},
 }: HeaderBarProps) => {
+  const { goBack } = useNavigation();
   return (
     <View
       style={{
         ...defaultStyles.container,
+        backgroundColor: backgroundColor || 'white',
         ...headerBarStyle,
       }}
     >
+      {backIcon && (
+        <TouchableOpacity
+        onPress={() => goBack() }
+        style={{
+          marginRight: 10,
+        }}
+        >
+          <ArrowBack width={24} />
+        </TouchableOpacity>
+      )}
       {renderLeftComponent && renderLeftComponent}
       {title && (
         <Text

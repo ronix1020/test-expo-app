@@ -23,7 +23,7 @@ export default function Login() {
 
     signInWithEmailAndPassword(firebaseAuth, correo, password)
       .then((userCredential) => {
-        console.log(userCredential);
+        // console.log(userCredential);
       })
       .catch((error) => {
         console.error("Ha ocurrido un error al registrar un usuario", error);

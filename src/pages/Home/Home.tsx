@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import {
-  Text,
   Alert,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Image
 } from "react-native";
 import { firebaseAuth } from "../../../firebaseConfig";
-import { getAllWritings, postWriting } from "../../services/writingsService";
+import { getAllWritings } from "../../services/writingsService";
 import { WritingsInterface } from "../../interfaces/HomeInterfaces";
 import { RenderWritings } from "./components/renderWritings";
 import { MainLayout } from "../../components/MainLayout";
@@ -15,9 +15,10 @@ import { HeaderBar } from "../../components/HeaderBar";
 import { ColorsApp } from "../../themes/colors";
 import { FAB } from "../../components/FAB";
 import { AddNewWritingModal } from "./components/addNewWritingModal";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Home() {
-  const user = firebaseAuth.currentUser;
+  const { navigate } = useNavigation();
   const [writings, setWritings] = useState<WritingsInterface[]>();
   const [writingModal, setWritingModal] = useState(false);
 
@@ -30,29 +31,11 @@ export default function Home() {
     await getAllWritings()
       .then((response) => {
         // console.log("Respuesta", response);
-        setWritings(response);
+        setWritings(response.reverse());
       })
       .catch((error) => {
         console.log("Error", error);
         Alert.alert("Error", "Ha ocurrido un error al obtener los escritos");
-      });
-  };
-
-  // funcion para poder hacer un escrito
-  const onPostWriting = async () => {
-    await postWriting(
-      "Escrito 2",
-      "Un ejemplo de un texto",
-      "#fffffd",
-      "https://picsum.photos/200/300",
-      "Jonh"
-    )
-      .then((response) => {
-        getWrittings();
-        Alert.alert("Escrito creado", "Se ha creado el escrito correctamente");
-      })
-      .catch((error) => {
-        Alert.alert("Error", "Ha ocurrido un error al crear el escrito");
       });
   };
 
@@ -62,10 +45,15 @@ export default function Home() {
         title={`E S C R I T O S`}
         renderRightComponent={
           <TouchableOpacity
-            onPress={() => firebaseAuth.signOut()}
+            onPress={() => navigate('Profile')}
             style={styles.buttonLogout}
           >
-            <Text style={styles.textLogout}>Cerrar sesión</Text>
+            <Image 
+            source={require('./../../../assets/images/profile_icon.png')}
+            style={{
+              width: 30,
+              height: 30
+            }}/>
           </TouchableOpacity>
         }
       />
@@ -78,7 +66,10 @@ export default function Home() {
       />
       <AddNewWritingModal 
         visible={ writingModal }
-        onClose={() => setWritingModal(false)}
+        onClose={() => {
+          setWritingModal(false)
+          getWrittings()
+        }}
       />
     </MainLayout>
   );

@@ -5,9 +5,13 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { TextField } from "../../../components/TextField";
 import { ColorsApp } from "../../../themes/colors";
+import { postWriting } from "../../../services/writingsService";
+import { firebaseAuth } from "../../../../firebaseConfig";
+import { ListColors } from "./listColors";
 
 interface AddNewWritingModalProps {
   visible: boolean;
@@ -18,6 +22,35 @@ export const AddNewWritingModal = ({
   visible,
   onClose,
 }: AddNewWritingModalProps) => {
+  const user = firebaseAuth.currentUser;
+  const [title, setTitle] = React.useState<string>("");
+  const [content, setContent] = React.useState<string>("");
+  const [colorBackground, setColorBackground] = React.useState<string>('')
+
+
+  // funcion para poder hacer un escrito
+  const onPostWriting = async () => {
+    if (!title || !content || !colorBackground) {
+      Alert.alert("Campos vacios", "Por favor llena todos los campos");
+      return;
+    }
+
+    await postWriting(
+      title,
+      content,
+      colorBackground,
+      "https://picsum.photos/200/300",
+      user?.displayName || "Anonimo",
+    )
+      .then((response) => {
+        Alert.alert("Escrito creado", "Se ha creado el escrito correctamente");
+        onClose();
+      })
+      .catch((error) => {
+        Alert.alert("Error", "Ha ocurrido un error al crear el escrito");
+      });
+  };
+
   return (
     <Modal
       visible={visible}
@@ -38,19 +71,28 @@ export const AddNewWritingModal = ({
             placeholder="Título"
             placeholderTextColor={ColorsApp[400]}
             style={styles.textField}
+            onChangeText={(text) => setTitle(text)}
             enterKeyHint="done"
           />
           <Text style={styles.labelTextField}>Escribe!</Text>
           <TextField
-            placeholder="Título"
+            placeholder="Contenido del escrito"
             placeholderTextColor={ColorsApp[400]}
             style={styles.textFieldBig}
+            onChangeText={(text) => setContent(text)}
             multiline
             numberOfLines={4}
             enterKeyHint="done"
             blurOnSubmit
           />
-          <TouchableOpacity onPress={() => {}} style={styles.submitButton}>
+          <Text style={styles.labelTextField}>
+            Selecciona un color para tu escrito
+          </Text>
+          <ListColors 
+          colorSelected={colorBackground}
+          setColorSelected={setColorBackground}
+          /> 
+          <TouchableOpacity onPress={onPostWriting} style={styles.submitButton}>
             <Text style={styles.textSubmitButton}>Crear escrito</Text>
           </TouchableOpacity>
         </View>
@@ -127,6 +169,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontFamily: "Lato_400Regular",
     height: 200,
+    textAlignVertical: "top",
+    paddingVertical: 10,
   },
   submitButton: {
     height: 40,
